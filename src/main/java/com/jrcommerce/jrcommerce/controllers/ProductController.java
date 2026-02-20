@@ -1,5 +1,7 @@
 package com.jrcommerce.jrcommerce.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,5 +20,10 @@ public class ProductController {
     @GetMapping(value = "/{id}")
     public ProductDTO findById(@PathVariable Long id) {
         return productService.findById(id);
+    }
+
+    @GetMapping
+    public List<ProductDTO> findAll() {
+        return productService.findAll();
     }
 }
