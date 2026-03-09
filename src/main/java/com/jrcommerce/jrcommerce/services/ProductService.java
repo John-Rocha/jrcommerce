@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jrcommerce.jrcommerce.dto.ProductDTO;
 import com.jrcommerce.jrcommerce.entities.Product;
 import com.jrcommerce.jrcommerce.repositories.ProductRepository;
+import com.jrcommerce.jrcommerce.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ProductService {
@@ -17,7 +18,8 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
-        Product product = productRepository.findById(id).get();
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
         return new ProductDTO(product);
     }
@@ -38,7 +40,8 @@ public class ProductService {
 
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto) {
-        Product product = productRepository.getReferenceById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
         copyDtoToEntity(dto, product);
         product = productRepository.save(product);
         return new ProductDTO(product);
@@ -46,6 +49,9 @@ public class ProductService {
 
     @Transactional
     public void delete(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Produto não encontrado");
+        }
         productRepository.deleteById(id);
     }
 
